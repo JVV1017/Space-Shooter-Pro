@@ -15,7 +15,12 @@ public class Player : MonoBehaviour
 
     // Example
     [SerializeField]
-    public float _speed = 3.5f;
+    private float _speed = 3.5f;         // Variable to store the speed for player movement
+    [SerializeField]
+    private GameObject _laserPrefab;      // Variable to be used to instantiate the laser prefab object
+    [SerializeField]
+    private float _fireRate = 0.15f;     // Variable to control the firerate (to built a cooldown system in this case)
+    private float _canFire = -1f;       // Variable to determine if the player can fire
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -27,9 +32,15 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        CalculateMovement();
+        CalculateMovement();    // Calls the player movement function
+
+        if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire)
+        {
+            FireLaser();
+        }
     }
 
+    // Function for the player object's movement like up, down, left, right 
     void CalculateMovement(){
         // Float variable accessing axis Horizontal
         float horizontalInput = Input.GetAxis("Horizontal"); // right = 1 and left = -1
@@ -80,5 +91,16 @@ public class Player : MonoBehaviour
         else if (transform.position.x < -11.3f) {
             transform.position = new Vector3(11.3f, transform.position.y, 0);
         }
+    }
+
+    // Function to handle the reassignation of the canFire variable and instantiation so no need of the if statement
+    void FireLaser()
+    {
+        // To debug (see if space key works properly)
+        //Debug.Log("Space Key Pressed");
+
+        _canFire = Time.time + _fireRate;       // Updates the canFire variable to the current time (Time.time) plus the fire rate which sets the next time, the player can fire
+
+        Instantiate(_laserPrefab, transform.position + new Vector3(0, 0.8f, 0), Quaternion.identity);   // Spawns or instantiates a laser object using laserprefab object that spawns 0.8 units above the player with no rotation
     }
 }
