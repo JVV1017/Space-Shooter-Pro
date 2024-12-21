@@ -14,13 +14,15 @@ public class Player : MonoBehaviour
     // Most of the variables used throughout the course are going to be private, variables are public if it is required.
 
     // Example
-    [SerializeField]
+    [SerializeField]                // This allows a private variable to be viewed in the inspector
     private float _speed = 3.5f;         // Variable to store the speed for player movement
     [SerializeField]
     private GameObject _laserPrefab;      // Variable to be used to instantiate the laser prefab object
     [SerializeField]
     private float _fireRate = 0.15f;     // Variable to control the firerate (to built a cooldown system in this case)
     private float _canFire = -1f;       // Variable to determine if the player can fire
+    [SerializeField]
+    private int _lives = 3;             // Variable to store the player's lives value
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -94,7 +96,7 @@ public class Player : MonoBehaviour
     }
 
     // Function to handle the reassignation of the canFire variable and instantiation so no need of the if statement
-    void FireLaser()
+    void FireLaser()        // if no private or public is mentioned, its private by default
     {
         // To debug (see if space key works properly)
         //Debug.Log("Space Key Pressed");
@@ -102,5 +104,15 @@ public class Player : MonoBehaviour
         _canFire = Time.time + _fireRate;       // Updates the canFire variable to the current time (Time.time) plus the fire rate which sets the next time, the player can fire
 
         Instantiate(_laserPrefab, transform.position + new Vector3(0, 0.8f, 0), Quaternion.identity);   // Spawns or instantiates a laser object using laserprefab object that spawns 0.8 units above the player with no rotation
+    }
+
+    public void Damage()        // Its going to be a public function because the damage/lives part needs to be viewed/modified by the enemy class
+    {
+        _lives--;       // Same thing as lives -= 1 or lives = lives - 1
+
+        if (_lives < 1)         // If the lives is less than 1 (meaning 0)
+        {
+            Destroy(this.gameObject);   // Then the player dies meaning the player object is destroyed
+        }
     }
 }
