@@ -14,21 +14,30 @@ public class Player : MonoBehaviour
     // Most of the variables used throughout the course are going to be private, variables are public if it is required.
 
     // Example
-    [SerializeField]                // This allows a private variable to be viewed in the inspector
-    private float _speed = 3.5f;         // Variable to store the speed for player movement
+    [SerializeField]                        // This allows a private variable to be viewed in the inspector
+    private float _speed = 3.5f;            // Variable to store the speed for player movement
     [SerializeField]
-    private GameObject _laserPrefab;      // Variable to be used to instantiate the laser prefab object
+    private GameObject _laserPrefab;        // Variable to be used to instantiate the laser prefab object
     [SerializeField]
-    private float _fireRate = 0.15f;     // Variable to control the firerate (to built a cooldown system in this case)
-    private float _canFire = -1f;       // Variable to determine if the player can fire
+    private float _fireRate = 0.15f;        // Variable to control the firerate (to built a cooldown system in this case)
+    private float _canFire = -1f;           // Variable to determine if the player can fire
     [SerializeField]
-    private int _lives = 3;             // Variable to store the player's lives value
+    private int _lives = 3;                 // Variable to store the player's lives value
+    private SpawnManager _spawnManager;     // Variable to access the spawnManager and communicate
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         // Take the current position = new position (0, 0, 0)
         transform.position = new Vector3(0,0,0);
+        _spawnManager = GameObject.Find("Spawn_Manager").GetComponent<SpawnManager>();   // Finds the SpawnManager and gets its component (successfully get access to the SpawnManager Script file)
+        
+        // Nullcheck (if spawnmanager is null then good to see log error message to realize the game is not ready to be deployed)
+        if (_spawnManager == null)
+        {
+            Debug.LogError("The Spawn Manager is NULL.");
+        }
     }
 
     // Update is called once per frame
@@ -112,6 +121,7 @@ public class Player : MonoBehaviour
 
         if (_lives < 1)         // If the lives is less than 1 (meaning 0)
         {
+            _spawnManager.OnPlayerDeath();      // Communicates with the SpawnManager and uses its OnPlayerDeath function where no lives, spawning stops
             Destroy(this.gameObject);   // Then the player dies meaning the player object is destroyed
         }
     }
