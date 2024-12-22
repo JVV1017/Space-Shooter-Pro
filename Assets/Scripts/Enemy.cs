@@ -30,7 +30,10 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter(Collider other)     // When the enemy has collied with another object, its stores as a collider object called other by default (using other, we can identify what collides with our enemy object) 
+
+    // OnTriggerEnter = 3D collider trigger function with a Collider parameter which is for 3D
+    // However OnTriggerEnter2D = 2D collider trigger function with a Collider2D parameter which is for 2D
+    private void OnTriggerEnter2D(Collider2D other)     // When the enemy has collied with another object, its stores as a collider object called other by default (using other, we can identify what collides with our enemy object) 
     {
         //Debug.Log("Hit: " + other.transform.name);
 

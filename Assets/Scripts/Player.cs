@@ -112,7 +112,7 @@ public class Player : MonoBehaviour
 
         _canFire = Time.time + _fireRate;       // Updates the canFire variable to the current time (Time.time) plus the fire rate which sets the next time, the player can fire
 
-        Instantiate(_laserPrefab, transform.position + new Vector3(0, 0.8f, 0), Quaternion.identity);   // Spawns or instantiates a laser object using laserprefab object that spawns 0.8 units above the player with no rotation
+        Instantiate(_laserPrefab, transform.position + new Vector3(0, 1.05f, 0), Quaternion.identity);   // Spawns or instantiates a laser object using laserprefab object that spawns 1.05 units above the player with no rotation
     }
 
     public void Damage()        // Its going to be a public function because the damage/lives part needs to be viewed/modified by the enemy class
