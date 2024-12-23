@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -24,7 +25,10 @@ public class Player : MonoBehaviour
     [SerializeField]
     private int _lives = 3;                 // Variable to store the player's lives value
     private SpawnManager _spawnManager;     // Variable to access the spawnManager and communicate
-
+    [SerializeField]
+    private GameObject _tripleShot_Prefab;      // Variable used to instantiate the triple shot prefab object
+    [SerializeField]
+    private bool _isTripleShotActive = false;       // Variable to store the triple shot status
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -112,9 +116,30 @@ public class Player : MonoBehaviour
 
         _canFire = Time.time + _fireRate;       // Updates the canFire variable to the current time (Time.time) plus the fire rate which sets the next time, the player can fire
 
-        Instantiate(_laserPrefab, transform.position + new Vector3(0, 1.05f, 0), Quaternion.identity);   // Spawns or instantiates a laser object using laserprefab object that spawns 1.05 units above the player with no rotation
+        // If the tripleshot is active then it creates a tripleshot object
+        if (_isTripleShotActive == true)
+        {
+            Instantiate(_tripleShot_Prefab, transform.position, Quaternion.identity);       // Creates triple shot object
+        }
+        else    // If it isn't active then it creates a laser object
+        {
+            Instantiate(_laserPrefab, transform.position + new Vector3(0, 1.05f, 0), Quaternion.identity);   // Spawns or instantiates a laser object using laserprefab object that spawns 1.05 units above the player with no rotation
+        }
+
+        //Instantiate(_laserPrefab, transform.position + new Vector3(0, 1.05f, 0), Quaternion.identity);   // Spawns or instantiates a laser object using laserprefab object that spawns 1.05 units above the player with no rotation
+
+        // Controls limiting instantiation of lasers
+        // if space key press
+        // if tripleshotActive is true
+        // fire 3 lasers (triple shot prefab)
+
+        // else fire 1 laser
+
+        // instantiate 3 lasers (triple shot prefab)
+
     }
 
+    // Player damage function containing player live functionality
     public void Damage()        // Its going to be a public function because the damage/lives part needs to be viewed/modified by the enemy class
     {
         _lives--;       // Same thing as lives -= 1 or lives = lives - 1
@@ -124,5 +149,22 @@ public class Player : MonoBehaviour
             _spawnManager.OnPlayerDeath();      // Communicates with the SpawnManager and uses its OnPlayerDeath function where no lives, spawning stops
             Destroy(this.gameObject);   // Then the player dies meaning the player object is destroyed
         }
+    }
+
+    // Function to turn on Triple Shot and to start a powerdown of 5 seconds when the function its called
+    public void TripleShotActive()
+    {
+        // Enable triple shot
+        _isTripleShotActive = true;
+        
+        // Start the power down coroutine for triple shot
+        StartCoroutine(TripleShotPowerDownRoutine());           // StartCoroutine is to start a IEnumerator function/coroutine
+    }
+
+    // Power Down Coroutine
+    IEnumerator TripleShotPowerDownRoutine()
+    {
+        yield return new WaitForSeconds(5.0f);      // Yield/wait first then return new after waiting for 5 seconds
+        _isTripleShotActive = false;                // Then disable the triple shot powerup 
     }
 }

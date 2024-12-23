@@ -5,9 +5,9 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     [SerializeField]
-    private float _speed = 4.0f;
+    private float _speed = 4.0f;        // Variable to store the speed for enemy movement
     [SerializeField]
-    private GameObject _enemyPrefab;
+    private GameObject _enemyPrefab;    // Variable to be used to instantiate the enemy prefab object
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -30,9 +30,11 @@ public class Enemy : MonoBehaviour
         }
     }
 
-
+    // Note:
     // OnTriggerEnter = 3D collider trigger function with a Collider parameter which is for 3D
     // However OnTriggerEnter2D = 2D collider trigger function with a Collider2D parameter which is for 2D
+
+    // Collider trigger when the enemy collides with the player (damages it and dies) or laser (dies)
     private void OnTriggerEnter2D(Collider2D other)     // When the enemy has collied with another object, its stores as a collider object called other by default (using other, we can identify what collides with our enemy object) 
     {
         //Debug.Log("Hit: " + other.transform.name);
@@ -53,7 +55,6 @@ public class Enemy : MonoBehaviour
             {
                 player.Damage();        // Uses the damage function found in the Player script 
             }
-
 
             Destroy(this.gameObject);       // the enemy object gets destroyed
         }

@@ -7,14 +7,20 @@ public class SpawnManager : MonoBehaviour
     private GameObject _enemyPrefab;        // Allows to instantiate the enemy object using its prefab
     [SerializeField]
     private GameObject _enemyContainer;     // Allows to containerize all the new instantiated enemy objects into this container
+    [SerializeField]
+    private GameObject _tripleShotPowerupPrefab;    // Allows to instantiate the triple shot powerup object using its prefab
 
-    private bool _stopSpawning = false;     // Used to stop spawning if the player is dead
+    private bool _stopSpawning = false;     // Used to stop spawning if the player is dead or powerup is below the screen
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        //StartCoroutine("SpawnRoutine");     // Option 1
-        StartCoroutine(SpawnRoutine());           // Option 2
+        // Start the Coroutine for spawning enemy
+        //StartCoroutine("SpawnEnemyRoutine");          // Option 1
+        StartCoroutine(SpawnEnemyRoutine());            // Option 2
+
+        // Start the Coroutine for spawning powerups
+        StartCoroutine(SpawnPowerupRoutine());
     }
 
     // Update is called once per frame
@@ -23,9 +29,8 @@ public class SpawnManager : MonoBehaviour
         
     }
 
-    // Spawn game objects every 5 seconds
-    // Create a coroutine of type IEnumerator -- Yield Events
-    IEnumerator SpawnRoutine()
+    // Spawning Enemy Coroutine
+    IEnumerator SpawnEnemyRoutine()
     {
         // while loop (infinite loop) 
         while (_stopSpawning == false)          // Infinitely loops until the stopSpawning is true
@@ -37,7 +42,19 @@ public class SpawnManager : MonoBehaviour
         }
     }
 
-    // Function to stop spawning
+    // Spawning Powerups Coroutine
+    IEnumerator SpawnPowerupRoutine()
+    {
+        // every 3-7 seconds, spawn in a powerup
+        while (_stopSpawning == false)
+        {
+            Vector3 posToSpawn = new Vector3(Random.Range(-8f, 8f), 7, 0);
+            Instantiate(_tripleShotPowerupPrefab, posToSpawn, Quaternion.identity);
+            yield return new WaitForSeconds(Random.Range(3, 8));
+        }
+    }
+
+    // Function to stop spawning when its called
     public void OnPlayerDeath()
     {
         _stopSpawning = true;       // stops spawning true = stops spawning
