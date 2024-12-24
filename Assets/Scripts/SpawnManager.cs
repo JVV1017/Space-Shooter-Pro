@@ -48,10 +48,10 @@ public class SpawnManager : MonoBehaviour
         // every 3-7 seconds, spawn in a powerup
         while (_stopSpawning == false)
         {
-            Vector3 posToSpawn = new Vector3(Random.Range(-8f, 8f), 7, 0);
-            int randomPowerUp = Random.Range(0, 2);
-            Instantiate(powerups[randomPowerUp], posToSpawn, Quaternion.identity);
-            yield return new WaitForSeconds(Random.Range(3, 8));
+            Vector3 posToSpawn = new Vector3(Random.Range(-8f, 8f), 7, 0);              // Random range to spawn along the x axis
+            int randomPowerUp = Random.Range(0, 3);                                     // Randomily chooses values from 0 to 2
+            Instantiate(powerups[randomPowerUp], posToSpawn, Quaternion.identity);      // create powerup by using the randomPowerUp to choose a certain powerup from the array then to spawn from the position found in posToSpawn which has random x values to start from with no rotation
+            yield return new WaitForSeconds(Random.Range(3, 8));                        // Randomly spawn between 3-7 seconds
         }
     }
 

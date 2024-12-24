@@ -37,6 +37,7 @@ public class Powerup : MonoBehaviour
             // Assign the handle to the component while null checking at the same time
             if (player != null)
             {
+                // A switch case to define each power up status
                 switch (powerupID)
                 {
                     case 0:
@@ -46,7 +47,7 @@ public class Powerup : MonoBehaviour
                         player.SpeedBoostActive();
                         break;
                     case 2:
-                        Debug.Log("Shields Collected");
+                        player.ShieldsActive();
                         break;
                     default:
                         Debug.Log("Default Value");

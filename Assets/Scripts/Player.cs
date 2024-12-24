@@ -22,8 +22,6 @@ public class Player : MonoBehaviour
     private GameObject _laserPrefab;        // Variable to be used to instantiate the laser prefab object
     [SerializeField]
     private GameObject _tripleShot_Prefab;      // Variable used to instantiate the triple shot prefab object
-    [SerializeField]
-    private GameObject _speedBoost_Prefab;      // Variable used to speed up the player speed using speed boost prefab object
     private SpawnManager _spawnManager;     // Variable to access the spawnManager and communicate
     [SerializeField]
     private float _fireRate = 0.15f;        // Variable to control the firerate (to built a cooldown system in this case)
@@ -31,7 +29,10 @@ public class Player : MonoBehaviour
     [SerializeField]
     private int _lives = 3;                     // Variable to store the player's lives value
     private bool _isTripleShotActive = false;       // Variable to store the triple shot status
-    private bool _isSpeedBoostActive = false;       // Variable to store the speed boost status
+    //private bool _isSpeedBoostActive = false;       // Variable to store the speed boost status
+    private bool _isShieldActive = false;           // Variable to store the shield status
+    [SerializeField]
+    private GameObject _shieldVisualizer;           // Variable to access the shield around the player (visualizer)
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -85,6 +86,11 @@ public class Player : MonoBehaviour
         Vector3 direction = new Vector3(horizontalInput, verticalInput, 0);
         transform.Translate(direction * _speed * Time.deltaTime);
 
+        //if (_isSpeedBoostActive == false)
+        //    transform.Translate(direction * _speed * Time.deltaTime);
+        //else
+        //    transform.Translate(direction * (_speed * _speedMultiplier) * Time.deltaTime);
+
         // if-case (User Input Bounds)
 
         // Vertical Bounds
@@ -123,23 +129,19 @@ public class Player : MonoBehaviour
 
         else    // If it isn't active then it creates a laser object
             Instantiate(_laserPrefab, transform.position + new Vector3(0, 1.05f, 0), Quaternion.identity);   // Spawns or instantiates a laser object using laserprefab object that spawns 1.05 units above the player with no rotation
-
-        //Instantiate(_laserPrefab, transform.position + new Vector3(0, 1.05f, 0), Quaternion.identity);   // Spawns or instantiates a laser object using laserprefab object that spawns 1.05 units above the player with no rotation
-
-        // Controls limiting instantiation of lasers
-        // if space key press
-        // if tripleshotActive is true
-        // fire 3 lasers (triple shot prefab)
-
-        // else fire 1 laser
-
-        // instantiate 3 lasers (triple shot prefab)
-
     }
 
     // Player damage function containing player live functionality
     public void Damage()        // Its going to be a public function because the damage/lives part needs to be viewed/modified by the enemy class
     {
+        // if shield is on, then
+        if (_isShieldActive == true)
+        {
+            _isShieldActive = false;                    // if hit, turns it off and 
+            _shieldVisualizer.SetActive(false);         // disables the visualizer
+            return;                                     // Done/stop
+        }
+        
         _lives--;       // Same thing as lives -= 1 or lives = lives - 1
 
         if (_lives < 1)         // If the lives is less than 1 (meaning 0)
@@ -170,7 +172,7 @@ public class Player : MonoBehaviour
     public void SpeedBoostActive()
     {
         // Enable speed boost
-        _isSpeedBoostActive = true;
+        //_isSpeedBoostActive = true;
         
         // Multiply speed with speed multiplier variable (5 * 2 = 10 units)
         _speed *= _speedMultiplier;
@@ -183,9 +185,18 @@ public class Player : MonoBehaviour
     IEnumerator SpeedBoostPowerDownRoutine()
     {
         yield return new WaitForSeconds(5.0f);      // Yield/wait first then return new after waiting for 5 seconds
-        _isSpeedBoostActive = false;                // Then disable the speed boost powerup 
+        //_isSpeedBoostActive = false;                // Then disable the speed boost powerup 
 
         // Divide speed with speed multiplier variable (10 / 2 = 5 units)
         _speed /= _speedMultiplier;
+    }
+
+    public void ShieldsActive()
+    {
+        // Enable shield
+        _isShieldActive = true;
+
+        // enable the visualizer
+        _shieldVisualizer.SetActive(true);
     }
 }
