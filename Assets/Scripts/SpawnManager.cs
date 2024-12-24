@@ -8,7 +8,7 @@ public class SpawnManager : MonoBehaviour
     [SerializeField]
     private GameObject _enemyContainer;     // Allows to containerize all the new instantiated enemy objects into this container
     [SerializeField]
-    private GameObject _tripleShotPowerupPrefab;    // Allows to instantiate the triple shot powerup object using its prefab
+    private GameObject[] powerups;         // Allows to instantiate the any powerup object using its prefab (array/list)
 
     private bool _stopSpawning = false;     // Used to stop spawning if the player is dead or powerup is below the screen
 
@@ -49,7 +49,8 @@ public class SpawnManager : MonoBehaviour
         while (_stopSpawning == false)
         {
             Vector3 posToSpawn = new Vector3(Random.Range(-8f, 8f), 7, 0);
-            Instantiate(_tripleShotPowerupPrefab, posToSpawn, Quaternion.identity);
+            int randomPowerUp = Random.Range(0, 2);
+            Instantiate(powerups[randomPowerUp], posToSpawn, Quaternion.identity);
             yield return new WaitForSeconds(Random.Range(3, 8));
         }
     }

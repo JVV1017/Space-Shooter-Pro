@@ -17,10 +17,7 @@ public class NewMonoBehaviourScript : MonoBehaviour
         {
             // Check if this object has a parent
             if (transform.parent != null)           // Remember: transform = transform of this object
-            {
-                // destroy this parent too!
                 Destroy(transform.parent.gameObject);       // Destroys this object's parent gameObject which also means destroying all the child gameObjects
-            }
 
             Destroy(this.gameObject);           // Destroys the laserobject by specifying this script's gameobject
             // Destroy(this.gameObject, 5f);   // Alternatively, you can use 5f with Destroy to destroy the object after 5 seconds from when the object was 

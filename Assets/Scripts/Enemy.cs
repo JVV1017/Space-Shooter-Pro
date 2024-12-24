@@ -52,9 +52,7 @@ public class Enemy : MonoBehaviour
             Player player = other.transform.GetComponent<Player>();     // This is used to access the information from the player object and in this case, I want to access the Damage function found in the Player object and add it in a player variable object
             
             if (player != null)         // Checks if the player object really do exist then
-            {
                 player.Damage();        // Uses the damage function found in the Player script 
-            }
 
             Destroy(this.gameObject);       // the enemy object gets destroyed
         }

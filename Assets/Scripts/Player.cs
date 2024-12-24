@@ -17,18 +17,21 @@ public class Player : MonoBehaviour
     // Example
     [SerializeField]                        // This allows a private variable to be viewed in the inspector
     private float _speed = 3.5f;            // Variable to store the speed for player movement
+    private float _speedMultiplier = 2;     // Variable used to increase player speed when speed boost is collected
     [SerializeField]
     private GameObject _laserPrefab;        // Variable to be used to instantiate the laser prefab object
+    [SerializeField]
+    private GameObject _tripleShot_Prefab;      // Variable used to instantiate the triple shot prefab object
+    [SerializeField]
+    private GameObject _speedBoost_Prefab;      // Variable used to speed up the player speed using speed boost prefab object
+    private SpawnManager _spawnManager;     // Variable to access the spawnManager and communicate
     [SerializeField]
     private float _fireRate = 0.15f;        // Variable to control the firerate (to built a cooldown system in this case)
     private float _canFire = -1f;           // Variable to determine if the player can fire
     [SerializeField]
-    private int _lives = 3;                 // Variable to store the player's lives value
-    private SpawnManager _spawnManager;     // Variable to access the spawnManager and communicate
-    [SerializeField]
-    private GameObject _tripleShot_Prefab;      // Variable used to instantiate the triple shot prefab object
-    [SerializeField]
+    private int _lives = 3;                     // Variable to store the player's lives value
     private bool _isTripleShotActive = false;       // Variable to store the triple shot status
+    private bool _isSpeedBoostActive = false;       // Variable to store the speed boost status
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -39,9 +42,8 @@ public class Player : MonoBehaviour
         
         // Nullcheck (if spawnmanager is null then good to see log error message to realize the game is not ready to be deployed)
         if (_spawnManager == null)
-        {
             Debug.LogError("The Spawn Manager is NULL.");
-        }
+
     }
 
     // Update is called once per frame
@@ -50,9 +52,8 @@ public class Player : MonoBehaviour
         CalculateMovement();    // Calls the player movement function
 
         if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire)
-        {
             FireLaser();
-        }
+        
     }
 
     // Function for the player object's movement like up, down, left, right 
@@ -85,27 +86,27 @@ public class Player : MonoBehaviour
         transform.Translate(direction * _speed * Time.deltaTime);
 
         // if-case (User Input Bounds)
-        
+
         // Vertical Bounds
         // Implementation #1:
-        if (transform.position.y >= 0) {
+        if (transform.position.y >= 0) 
             transform.position = new Vector3(transform.position.x, 0, 0);
-        }
-        else if (transform.position.y <= -3.8f ) {
+        
+        else if (transform.position.y <= -3.8f ) 
             transform.position = new Vector3(transform.position.x, -3.8f, 0);
-        }
+        
 
         // Implementation #2:
         // Mathf.clamp(transform.position.y, -3.8f, 0) = y's min is -3.8f and max is 0
         //transform.position = new Vector3(transform.position.x, Mathf.clamp(transform.position.y, -3.8f, 0), 0);
 
         // Challenge: Do the horizontal bounds
-        if (transform.position.x > 11.3f) {
+        if (transform.position.x > 11.3f) 
             transform.position = new Vector3(-11.3f, transform.position.y, 0);
-        }
-        else if (transform.position.x < -11.3f) {
+        
+        else if (transform.position.x < -11.3f) 
             transform.position = new Vector3(11.3f, transform.position.y, 0);
-        }
+        
     }
 
     // Function to handle the reassignation of the canFire variable and instantiation so no need of the if statement
@@ -118,13 +119,10 @@ public class Player : MonoBehaviour
 
         // If the tripleshot is active then it creates a tripleshot object
         if (_isTripleShotActive == true)
-        {
             Instantiate(_tripleShot_Prefab, transform.position, Quaternion.identity);       // Creates triple shot object
-        }
+
         else    // If it isn't active then it creates a laser object
-        {
             Instantiate(_laserPrefab, transform.position + new Vector3(0, 1.05f, 0), Quaternion.identity);   // Spawns or instantiates a laser object using laserprefab object that spawns 1.05 units above the player with no rotation
-        }
 
         //Instantiate(_laserPrefab, transform.position + new Vector3(0, 1.05f, 0), Quaternion.identity);   // Spawns or instantiates a laser object using laserprefab object that spawns 1.05 units above the player with no rotation
 
@@ -161,10 +159,33 @@ public class Player : MonoBehaviour
         StartCoroutine(TripleShotPowerDownRoutine());           // StartCoroutine is to start a IEnumerator function/coroutine
     }
 
-    // Power Down Coroutine
+    // Power Down Coroutine Triple Shot
     IEnumerator TripleShotPowerDownRoutine()
     {
         yield return new WaitForSeconds(5.0f);      // Yield/wait first then return new after waiting for 5 seconds
         _isTripleShotActive = false;                // Then disable the triple shot powerup 
+    }
+
+    // Function to turn on Speed Boost and to start a powerdown of 5 seconds when the function its called 
+    public void SpeedBoostActive()
+    {
+        // Enable speed boost
+        _isSpeedBoostActive = true;
+        
+        // Multiply speed with speed multiplier variable (5 * 2 = 10 units)
+        _speed *= _speedMultiplier;
+
+        // Start the power down coroutine for speed boost
+        StartCoroutine(SpeedBoostPowerDownRoutine());
+    }
+
+    // Power Down Coroutine Speed Boost
+    IEnumerator SpeedBoostPowerDownRoutine()
+    {
+        yield return new WaitForSeconds(5.0f);      // Yield/wait first then return new after waiting for 5 seconds
+        _isSpeedBoostActive = false;                // Then disable the speed boost powerup 
+
+        // Divide speed with speed multiplier variable (10 / 2 = 5 units)
+        _speed /= _speedMultiplier;
     }
 }

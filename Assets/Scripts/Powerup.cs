@@ -5,6 +5,9 @@ public class Powerup : MonoBehaviour
     [SerializeField]
     private float _speed = 3.0f;        // Variable to store the speed for powerups movement
 
+    [SerializeField]            // 0 = Triple Shot, 1 = Speed, 2 = Shields
+    private int powerupID;      // Variable to distinguish each powerup through an id system
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -18,13 +21,11 @@ public class Powerup : MonoBehaviour
         transform.Translate(Vector3.down * _speed * Time.deltaTime);        // Remember: Time.deltaTime = RealTime
 
         // When we leave the screen, destroy this object
-        if (transform.position.y < -4.5f)
-        {
+        if (transform.position.y < -6f)
             Destroy(this.gameObject);
-        }
     }
 
-    // Collider trigger when the enemy collides with the player (enables player's triple shot powerup)
+    // Collider trigger when the enemy collides with the player (enables player's powerup)
     private void OnTriggerEnter2D(Collider2D other)
     {
         // Only be collectable by the Player
@@ -36,7 +37,21 @@ public class Powerup : MonoBehaviour
             // Assign the handle to the component while null checking at the same time
             if (player != null)
             {
-                player.TripleShotActive();
+                switch (powerupID)
+                {
+                    case 0:
+                        player.TripleShotActive();
+                        break;
+                    case 1:
+                        player.SpeedBoostActive();
+                        break;
+                    case 2:
+                        Debug.Log("Shields Collected");
+                        break;
+                    default:
+                        Debug.Log("Default Value");
+                        break;
+                }
             }
 
             // on collected, destroy the powerup object
