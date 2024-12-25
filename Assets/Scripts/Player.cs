@@ -22,7 +22,7 @@ public class Player : MonoBehaviour
     private GameObject _laserPrefab;        // Variable to be used to instantiate the laser prefab object
     [SerializeField]
     private GameObject _tripleShot_Prefab;      // Variable used to instantiate the triple shot prefab object
-    private SpawnManager _spawnManager;     // Variable to access the spawnManager and communicate
+    private SpawnManager _spawnManager;     // Variable to access the spawnManager and communicate with
     [SerializeField]
     private float _fireRate = 0.15f;        // Variable to control the firerate (to built a cooldown system in this case)
     private float _canFire = -1f;           // Variable to determine if the player can fire
@@ -33,18 +33,25 @@ public class Player : MonoBehaviour
     private bool _isShieldActive = false;           // Variable to store the shield status
     [SerializeField]
     private GameObject _shieldVisualizer;           // Variable to access the shield around the player (visualizer)
+    [SerializeField]
+    private int _score;                         // Variable used to store the player's score amount
+    private UIManager _uiManager;               // Variable to access the uiManager and communicate with
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         // Take the current position = new position (0, 0, 0)
         transform.position = new Vector3(0,0,0);
-        _spawnManager = GameObject.Find("Spawn_Manager").GetComponent<SpawnManager>();   // Finds the SpawnManager and gets its component (successfully get access to the SpawnManager Script file)
-        
+        _spawnManager = GameObject.Find("Spawn_Manager").GetComponent<SpawnManager>();      // Finds the SpawnManager and gets its component (successfully get access to the SpawnManager Script file)
+        _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();                   // Finds the uiManager and gets its component (successfully get access to the uiManager Script file)
+
         // Nullcheck (if spawnmanager is null then good to see log error message to realize the game is not ready to be deployed)
         if (_spawnManager == null)
             Debug.LogError("The Spawn Manager is NULL.");
 
+        // Nullcheck (if uiManager is null then good to see log error message to realize the game is not ready to be deployed)
+        if (_uiManager == null)
+            Debug.LogError("The UI Manager is NULL.");
     }
 
     // Update is called once per frame
@@ -144,6 +151,8 @@ public class Player : MonoBehaviour
         
         _lives--;       // Same thing as lives -= 1 or lives = lives - 1
 
+        _uiManager.UpdateLives(_lives);     // If lives is removed by 1 or more, it gets updated by calling the UpdateLives funciton in uiManager
+
         if (_lives < 1)         // If the lives is less than 1 (meaning 0)
         {
             _spawnManager.OnPlayerDeath();      // Communicates with the SpawnManager and uses its OnPlayerDeath function where no lives, spawning stops
@@ -198,5 +207,19 @@ public class Player : MonoBehaviour
 
         // enable the visualizer
         _shieldVisualizer.SetActive(true);
+    }
+
+    // Function to add 10 to the score!
+    // Communicate with the UI to update the score!
+    public void AddScore(int points)
+    {
+        // Hard coded method to add 10 points per enemy kill
+        //_score += 10;
+
+        // Less hardcoded method where the enemy class decided the points for the kill by the player (good if randomized points or enemy type point system)
+        _score += points;
+
+        // Communicates the score amount of the player with the uiManager
+        _uiManager.UpdateScore(_score);
     }
 }

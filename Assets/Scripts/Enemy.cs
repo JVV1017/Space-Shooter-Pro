@@ -8,11 +8,12 @@ public class Enemy : MonoBehaviour
     private float _speed = 4.0f;        // Variable to store the speed for enemy movement
     [SerializeField]
     private GameObject _enemyPrefab;    // Variable to be used to instantiate the enemy prefab object
+    private Player _player;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        _player = GameObject.Find("Player").GetComponent<Player>();
     }
 
     // Update is called once per frame
@@ -60,7 +61,11 @@ public class Enemy : MonoBehaviour
         // Enemy collides with Laser
         if (other.tag == "Laser")           // If the enemy object collides with an object that is tagged laser then
         {
-            Destroy(other.gameObject);      // The laser object gets destroyed and
+            Destroy(other.gameObject);      // The laser object gets destroyed and 
+            
+            if (_player != null)             // Checks if the player object really do exist then
+                _player.AddScore(10);         // Uses the score text function found in the Player script (adds 10 pts to score)
+
             Destroy(this.gameObject);       // The enemy object gets destroyed as well
         }
     }
