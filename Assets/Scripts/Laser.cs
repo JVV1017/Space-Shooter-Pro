@@ -20,7 +20,7 @@ public class NewMonoBehaviourScript : MonoBehaviour
                 Destroy(transform.parent.gameObject);       // Destroys this object's parent gameObject which also means destroying all the child gameObjects
 
             Destroy(this.gameObject);           // Destroys the laserobject by specifying this script's gameobject
-            // Destroy(this.gameObject, 5f);   // Alternatively, you can use 5f with Destroy to destroy the object after 5 seconds from when the object was 
+            // Destroy(this.gameObject, 5f);   // Alternatively, you can use 5f with Destroy to destroy the object after 5 seconds
         }
     }
 }

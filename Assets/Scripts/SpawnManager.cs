@@ -12,8 +12,10 @@ public class SpawnManager : MonoBehaviour
 
     private bool _stopSpawning = false;     // Used to stop spawning if the player is dead or powerup is below the screen
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+
+
+    // Spawning function that is public with the other classes to communicate with
+    public void StartSpawning()
     {
         // Start the Coroutine for spawning enemy
         //StartCoroutine("SpawnEnemyRoutine");          // Option 1
@@ -23,15 +25,11 @@ public class SpawnManager : MonoBehaviour
         StartCoroutine(SpawnPowerupRoutine());
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     // Spawning Enemy Coroutine
     IEnumerator SpawnEnemyRoutine()
     {
+        yield return new WaitForSeconds(3.0f);      // Wait 3 seconds then start spawning
+
         // while loop (infinite loop) 
         while (_stopSpawning == false)          // Infinitely loops until the stopSpawning is true
         {
@@ -45,6 +43,8 @@ public class SpawnManager : MonoBehaviour
     // Spawning Powerups Coroutine
     IEnumerator SpawnPowerupRoutine()
     {
+        yield return new WaitForSeconds(3.0f);      // Wait 3 seconds then start spawning
+
         // every 3-7 seconds, spawn in a powerup
         while (_stopSpawning == false)
         {

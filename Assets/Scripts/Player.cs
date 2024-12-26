@@ -36,6 +36,8 @@ public class Player : MonoBehaviour
     [SerializeField]
     private int _score;                         // Variable used to store the player's score amount
     private UIManager _uiManager;               // Variable to access the uiManager and communicate with
+    [SerializeField]
+    private GameObject _leftEngine, _right_Engine;           // Variables to enable Left and Right Engine damage object 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -150,6 +152,13 @@ public class Player : MonoBehaviour
         }
         
         _lives--;       // Same thing as lives -= 1 or lives = lives - 1
+
+        // If lives is 2, enable right engine
+        // else if lives is 1, enable left engine
+        if (_lives == 2)
+            _leftEngine.SetActive(true);
+        else if (_lives == 1)
+           _right_Engine.SetActive(true);
 
         _uiManager.UpdateLives(_lives);     // If lives is removed by 1 or more, it gets updated by calling the UpdateLives funciton in uiManager
 

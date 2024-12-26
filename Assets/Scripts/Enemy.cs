@@ -8,12 +8,25 @@ public class Enemy : MonoBehaviour
     private float _speed = 4.0f;        // Variable to store the speed for enemy movement
     [SerializeField]
     private GameObject _enemyPrefab;    // Variable to be used to instantiate the enemy prefab object
-    private Player _player;
+    private Player _player;             // Variable to access the components of player
+    private Animator _anim;             // Variable to access animator component
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        // Gets the player's components
         _player = GameObject.Find("Player").GetComponent<Player>();
+
+        // Null Checks Player
+        if (_player == null)
+            Debug.Log("The Player is NULL.");
+
+        // Gets the animator's components
+        _anim = GetComponent<Animator>();
+
+        // Null Checks animator
+        if (_anim == null)
+            Debug.LogError("The animator is NULL.");
     }
 
     // Update is called once per frame
@@ -24,7 +37,7 @@ public class Enemy : MonoBehaviour
 
         // If bottom of screen
         // respawn at top with a new random x position (research to figure how to define a random position along the x values)
-        if (transform.position.y < -5f)
+        if (transform.position.y < -6f)
         {
             float randomX = Random.Range(-8f, 8f);
             transform.position = new Vector3(randomX, 7, 0);
@@ -54,8 +67,10 @@ public class Enemy : MonoBehaviour
             
             if (player != null)         // Checks if the player object really do exist then
                 player.Damage();        // Uses the damage function found in the Player script 
-
-            Destroy(this.gameObject);       // the enemy object gets destroyed
+            
+            _anim.SetTrigger("OnEnemyDeath");     // Trigger the anim
+            _speed = 0;                           // When hit by player, it stops so speed is nil
+            Destroy(this.gameObject, 2.8f);       // the enemy object gets destroyed
         }
 
         // Enemy collides with Laser
@@ -66,7 +81,9 @@ public class Enemy : MonoBehaviour
             if (_player != null)             // Checks if the player object really do exist then
                 _player.AddScore(10);         // Uses the score text function found in the Player script (adds 10 pts to score)
 
-            Destroy(this.gameObject);       // The enemy object gets destroyed as well
+            _anim.SetTrigger("OnEnemyDeath");     // Trigger the anim
+            _speed = 0;                           // When hit by laser, it stops so speed is nil
+            Destroy(this.gameObject, 2.8f);       // The enemy object gets destroyed as well
         }
     }
 }
