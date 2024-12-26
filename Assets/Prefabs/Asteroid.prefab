@@ -167,3 +167,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _rotateSpeed: 19
   _explosionPrefab: {fileID: 5638015088760990908, guid: 9b4c4726f005cbc4fa68effaf2877724, type: 3}
+  _explosionSoundClip: {fileID: 8300000, guid: a885c043fab7e46438bba03ba9dab6bc, type: 3}

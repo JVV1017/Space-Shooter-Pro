@@ -22,6 +22,8 @@ public class Player : MonoBehaviour
     private GameObject _laserPrefab;        // Variable to be used to instantiate the laser prefab object
     [SerializeField]
     private GameObject _tripleShot_Prefab;      // Variable used to instantiate the triple shot prefab object
+    [SerializeField]
+    private GameObject _explosionPrefab;    // Variable used to instantiate the explosion through its prefab
     private SpawnManager _spawnManager;     // Variable to access the spawnManager and communicate with
     [SerializeField]
     private float _fireRate = 0.15f;        // Variable to control the firerate (to built a cooldown system in this case)
@@ -38,6 +40,10 @@ public class Player : MonoBehaviour
     private UIManager _uiManager;               // Variable to access the uiManager and communicate with
     [SerializeField]
     private GameObject _leftEngine, _right_Engine;           // Variables to enable Left and Right Engine damage object 
+    // Variable to store the audio clip
+    [SerializeField]
+    private AudioClip _laserSoundClip;                  // AudioClip = To store the laser audio clip
+    private AudioSource _audioSource;                   // AudioSource = To point out the audio source to play
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -46,7 +52,8 @@ public class Player : MonoBehaviour
         transform.position = new Vector3(0,0,0);
         _spawnManager = GameObject.Find("Spawn_Manager").GetComponent<SpawnManager>();      // Finds the SpawnManager and gets its component (successfully get access to the SpawnManager Script file)
         _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();                   // Finds the uiManager and gets its component (successfully get access to the uiManager Script file)
-
+        _audioSource = GetComponent<AudioSource>();                                         // Gets the components of the audio source
+        
         // Nullcheck (if spawnmanager is null then good to see log error message to realize the game is not ready to be deployed)
         if (_spawnManager == null)
             Debug.LogError("The Spawn Manager is NULL.");
@@ -54,6 +61,12 @@ public class Player : MonoBehaviour
         // Nullcheck (if uiManager is null then good to see log error message to realize the game is not ready to be deployed)
         if (_uiManager == null)
             Debug.LogError("The UI Manager is NULL.");
+
+        // Nullcheck if audioSource is null or not and if its not null then its going to set the audioSource clip as the laserSoundClip when we play the game
+        if (_audioSource == null)
+            Debug.LogError("The Audio Source on the Player is NULL.");
+        else
+            _audioSource.clip = _laserSoundClip;
     }
 
     // Update is called once per frame
@@ -138,6 +151,9 @@ public class Player : MonoBehaviour
 
         else    // If it isn't active then it creates a laser object
             Instantiate(_laserPrefab, transform.position + new Vector3(0, 1.05f, 0), Quaternion.identity);   // Spawns or instantiates a laser object using laserprefab object that spawns 1.05 units above the player with no rotation
+
+        // Play the laser audio clip
+        _audioSource.Play();
     }
 
     // Player damage function containing player live functionality
@@ -164,6 +180,7 @@ public class Player : MonoBehaviour
 
         if (_lives < 1)         // If the lives is less than 1 (meaning 0)
         {
+            Instantiate(_explosionPrefab, transform.position, Quaternion.identity);     // Creates the explosion when the player dies
             _spawnManager.OnPlayerDeath();      // Communicates with the SpawnManager and uses its OnPlayerDeath function where no lives, spawning stops
             Destroy(this.gameObject);   // Then the player dies meaning the player object is destroyed
         }

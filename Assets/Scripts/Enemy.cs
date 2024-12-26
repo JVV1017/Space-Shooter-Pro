@@ -10,23 +10,31 @@ public class Enemy : MonoBehaviour
     private GameObject _enemyPrefab;    // Variable to be used to instantiate the enemy prefab object
     private Player _player;             // Variable to access the components of player
     private Animator _anim;             // Variable to access animator component
+    private AudioSource _audioSource;   // Variable to play the explosion sound from the audio source
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         // Gets the player's components
         _player = GameObject.Find("Player").GetComponent<Player>();
+        
+        // Gets the animator's components
+        _anim = GetComponent<Animator>();
+        
+        // Gets the audio source's components
+        _audioSource = GetComponent<AudioSource>();
 
         // Null Checks Player
         if (_player == null)
             Debug.Log("The Player is NULL.");
 
-        // Gets the animator's components
-        _anim = GetComponent<Animator>();
-
         // Null Checks animator
         if (_anim == null)
             Debug.LogError("The animator is NULL.");
+
+        // Null Checks the audio source
+        if (_audioSource == null)
+            Debug.LogError("The Audio Source on the Enemy is NULL.");
     }
 
     // Update is called once per frame
@@ -70,6 +78,7 @@ public class Enemy : MonoBehaviour
             
             _anim.SetTrigger("OnEnemyDeath");     // Trigger the anim
             _speed = 0;                           // When hit by player, it stops so speed is nil
+            _audioSource.Play();                  // Plays the explosion sound when enemy collides with the player
             Destroy(this.gameObject, 2.8f);       // the enemy object gets destroyed
         }
 
@@ -83,6 +92,7 @@ public class Enemy : MonoBehaviour
 
             _anim.SetTrigger("OnEnemyDeath");     // Trigger the anim
             _speed = 0;                           // When hit by laser, it stops so speed is nil
+            _audioSource.Play();                  // Plays the explosion sound when enemy collides with the laser
             Destroy(this.gameObject, 2.8f);       // The enemy object gets destroyed as well
         }
     }

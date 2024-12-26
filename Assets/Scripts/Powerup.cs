@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Powerup : MonoBehaviour
@@ -5,14 +6,11 @@ public class Powerup : MonoBehaviour
     [SerializeField]
     private float _speed = 3.0f;        // Variable to store the speed for powerups movement
 
-    [SerializeField]            // 0 = Triple Shot, 1 = Speed, 2 = Shields
-    private int powerupID;      // Variable to distinguish each powerup through an id system
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    [SerializeField]                    // 0 = Triple Shot, 1 = Speed, 2 = Shields
+    private int powerupID;              // Variable to distinguish each powerup through an id system
+    private AudioSource _audioSource;   // Variable used to play the audio source of powerup collected by player
+    [SerializeField]
+    private AudioClip _clip;             // Variable used to play clip at point 
 
     // Update is called once per frame
     void Update()
@@ -33,6 +31,9 @@ public class Powerup : MonoBehaviour
         {
             // Handle to the component I want (the player)
             Player player = other.transform.GetComponent<Player>();
+
+            // Plays Clip at point (to play an audio source on a specific position but automatically deletes it once the clip finishes playing) on the powerup's position
+            AudioSource.PlayClipAtPoint(_clip, transform.position);
 
             // Assign the handle to the component while null checking at the same time
             if (player != null)
