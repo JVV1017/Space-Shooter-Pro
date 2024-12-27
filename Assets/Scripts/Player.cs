@@ -48,8 +48,8 @@ public class Player : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        // Take the current position = new position (0, 0, 0)
-        transform.position = new Vector3(0,0,0);
+        // Take the current position = new position (0, -3, 0)
+        transform.position = new Vector3(0,-3,0);
         _spawnManager = GameObject.Find("Spawn_Manager").GetComponent<SpawnManager>();      // Finds the SpawnManager and gets its component (successfully get access to the SpawnManager Script file)
         _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();                   // Finds the uiManager and gets its component (successfully get access to the uiManager Script file)
         _audioSource = GetComponent<AudioSource>();                                         // Gets the components of the audio source
