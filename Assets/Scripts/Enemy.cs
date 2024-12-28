@@ -1,22 +1,25 @@
 using Unity.VisualScripting;
-using UnityEditor.Search;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
     [SerializeField]
-    private float _speed = 4.0f;        // Variable to store the speed for enemy movement
+    private float _speed = 4.0f;            // Variable to store the speed for enemy movement
     [SerializeField]
-    private GameObject _enemyPrefab;    // Variable to be used to instantiate the enemy prefab object
-    private Player _player;             // Variable to access the components of player
-    private Animator _anim;             // Variable to access animator component
-    private AudioSource _audioSource;   // Variable to play the explosion sound from the audio source
+    private GameObject _enemyPrefab;        // Variable to be used to instantiate the enemy prefab object
+    private Player _player;                 // Variable to access the components of player
+    private Animator _anim;                 // Variable to access animator component
+    private AudioSource _audioSource;       // Variable to play the explosion sound from the audio source
+    //[SerializeField]
+    //private GameObject _laserPrefab;        // Variable to instantiate the enemy laser prefab
+    //private float _fireRate = 3.0f;         // Variable for the enemy to fire between 3-7 seconds
+    //private float _canFire = -1f;           // Variable for the enemy to see if it can fire
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         // Gets the player's components
-        _player = GameObject.Find("Player").GetComponent<Player>();
+        _player = GameObject.Find("Player_1").GetComponent<Player>();
         
         // Gets the animator's components
         _anim = GetComponent<Animator>();
@@ -39,6 +42,32 @@ public class Enemy : MonoBehaviour
 
     // Update is called once per frame
     void Update()
+    {
+        CalculateMovement();
+
+        //if (Time.time > _canFire)
+        //{
+        //    // Enemy fires randomly between 3-7 seconds each time
+        //    _fireRate = Random.Range(3f, 7f);
+            
+        //    // Updates the canFire variable to the current time (Time.time) plus the fire rate which determines when the enemy can fire next
+        //    _canFire = Time.time + _fireRate;
+
+        //    // Creates a new enemy laser and stores it in a gameobject enemy laser
+        //    GameObject enemyLaser = Instantiate(_laserPrefab, transform.position, Quaternion.identity);
+
+        //    // Gets all the laser components that are children of the new gameobject enemyLaser in the lasers array of type laser
+        //    Laser[] lasers = enemyLaser.GetComponentsInChildren<Laser>();
+
+        //    // Loop through each Laser component and call AssignEnemyLaser to initialize it as an enemy laser
+        //    for (int i = 0; i < lasers.Length; i++)
+        //        lasers[i].AssignEnemyLaser();
+
+        //    //Debug.Break();      // Debugging method in Unity to pause just after instaniating an object
+        //}
+    }
+
+    void CalculateMovement()
     {
         // Move down at 4 meters per second 
         transform.Translate(Vector3.down * _speed * Time.deltaTime);
@@ -79,6 +108,8 @@ public class Enemy : MonoBehaviour
             _anim.SetTrigger("OnEnemyDeath");     // Trigger the anim
             _speed = 0;                           // When hit by player, it stops so speed is nil
             _audioSource.Play();                  // Plays the explosion sound when enemy collides with the player
+
+            Destroy(GetComponent<Collider2D>());    // Destroys the 2D collider after destroying the enemy so the player won't get damaged if collided by the enemy
             Destroy(this.gameObject, 2.8f);       // the enemy object gets destroyed
         }
 
@@ -93,6 +124,8 @@ public class Enemy : MonoBehaviour
             _anim.SetTrigger("OnEnemyDeath");     // Trigger the anim
             _speed = 0;                           // When hit by laser, it stops so speed is nil
             _audioSource.Play();                  // Plays the explosion sound when enemy collides with the laser
+
+            Destroy(GetComponent<Collider2D>());    // Destroys the 2D collider after destroying the enemy so the laser will not collide with the enemy object and go through
             Destroy(this.gameObject, 2.8f);       // The enemy object gets destroyed as well
         }
     }

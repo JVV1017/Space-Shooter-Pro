@@ -3,10 +3,15 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
-    // To load the game from the main menu
-    public void LoadGame()
+    // To load the single player game from the main menu
+    public void LoadSinglePlayerGame()
     {
-        // Load the game scene
-        SceneManager.LoadScene(1);      // Load Game Scene
+        SceneManager.LoadScene(1);      
+    }
+
+    // To load the co-op mode from the main menu
+    public void LoadCoOpMode()
+    {
+        SceneManager.LoadScene(2);
     }
 }

@@ -1,5 +1,7 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem.Layouts;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
@@ -25,6 +27,8 @@ public class Player : MonoBehaviour
     [SerializeField]
     private GameObject _explosionPrefab;    // Variable used to instantiate the explosion through its prefab
     private SpawnManager _spawnManager;     // Variable to access the spawnManager and communicate with
+    private UIManager _uiManager;           // Variable to access the uiManager and communicate with
+    private GameManager _gameManager;       // Variable to access the gameManager and communicate with
     [SerializeField]
     private float _fireRate = 0.15f;        // Variable to control the firerate (to built a cooldown system in this case)
     private float _canFire = -1f;           // Variable to determine if the player can fire
@@ -37,54 +41,80 @@ public class Player : MonoBehaviour
     private GameObject _shieldVisualizer;           // Variable to access the shield around the player (visualizer)
     [SerializeField]
     private int _score;                         // Variable used to store the player's score amount
-    private UIManager _uiManager;               // Variable to access the uiManager and communicate with
+    [SerializeField]
+    private int _bestScore;                     // Variable used to store the player's best score amount
     [SerializeField]
     private GameObject _leftEngine, _right_Engine;           // Variables to enable Left and Right Engine damage object 
     // Variable to store the audio clip
     [SerializeField]
     private AudioClip _laserSoundClip;                  // AudioClip = To store the laser audio clip
     private AudioSource _audioSource;                   // AudioSource = To point out the audio source to play
+    public bool _isPlayerOne = false;               // Used to differnntiate player 1
+    public bool _isPlayerTwo = false;               // Used to differentiate player 2
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        // Take the current position = new position (0, -3, 0)
-        transform.position = new Vector3(0,-3,0);
         _spawnManager = GameObject.Find("Spawn_Manager").GetComponent<SpawnManager>();      // Finds the SpawnManager and gets its component (successfully get access to the SpawnManager Script file)
-        _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();                   // Finds the uiManager and gets its component (successfully get access to the uiManager Script file)
+        _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();                   // Finds the uiManager and gets its component 
+        _gameManager = GameObject.Find("Game_Manager").GetComponent<GameManager>();         // Finds the GameManager and gets its component 
         _audioSource = GetComponent<AudioSource>();                                         // Gets the components of the audio source
-        
+
+        // If the game is not in co-op mode, make the player start from -3 in y and center otherwise, in co-op mode, where they were placed in the inspector
+        if (_gameManager._isCoOpMode == false)
+            // Take the current position = new position (0, -3, 0)
+            transform.position = new Vector3(0, -3, 0);
+
         // Nullcheck (if spawnmanager is null then good to see log error message to realize the game is not ready to be deployed)
         if (_spawnManager == null)
             Debug.LogError("The Spawn Manager is NULL.");
 
-        // Nullcheck (if uiManager is null then good to see log error message to realize the game is not ready to be deployed)
+        // Nullcheck the UiManager
         if (_uiManager == null)
             Debug.LogError("The UI Manager is NULL.");
+
+        // Nullcheck the Game Manager
+        if (_gameManager == null)
+            Debug.LogError("The Game Manager is NULL.");
 
         // Nullcheck if audioSource is null or not and if its not null then its going to set the audioSource clip as the laserSoundClip when we play the game
         if (_audioSource == null)
             Debug.LogError("The Audio Source on the Player is NULL.");
         else
             _audioSource.clip = _laserSoundClip;
+
+        GetBestScore();
     }
 
     // Update is called once per frame
     void Update()
     {
-        CalculateMovement();    // Calls the player movement function
+        // If player 1 
+        if (_isPlayerOne == true)
+        {
+            PlayerOneMovement();    // Calls the player movement function
 
-        if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire)
-            FireLaser();
-        
+            if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire)
+                FireLaser();
+        }
+
+        // If player 2
+        if (_isPlayerTwo == true)
+        {
+            PlayerTwoMovement();
+
+            if (Input.GetKeyDown(KeyCode.Mouse0) && Time.time > _canFire)
+                FireLaser();
+        }
     }
 
-    // Function for the player object's movement like up, down, left, right 
-    void CalculateMovement(){
-        // Float variable accessing axis Horizontal
+    // Function for the player one object's movement like up, down, left and right
+    void PlayerOneMovement()
+    {
+        // Float variable accessing axis Horizontal (removed left and right from input manager so uses a & d)
         float horizontalInput = Input.GetAxis("Horizontal"); // right = 1 and left = -1
 
-        // Float variable accessing axis Vertical
+        // Float variable accessing axis Vertical (removed up and down from input manager so uses w & s)
         float verticalInput = Input.GetAxis("Vertical"); // up = 1 and down = -1
 
         // 1 unit in unity is equal to 1 meter or in this case, 1 meter per frame or (1 meter x 60 = 60 meters)
@@ -122,13 +152,13 @@ public class Player : MonoBehaviour
         
         else if (transform.position.y <= -3.8f ) 
             transform.position = new Vector3(transform.position.x, -3.8f, 0);
-        
+
 
         // Implementation #2:
         // Mathf.clamp(transform.position.y, -3.8f, 0) = y's min is -3.8f and max is 0
         //transform.position = new Vector3(transform.position.x, Mathf.clamp(transform.position.y, -3.8f, 0), 0);
 
-        // Challenge: Do the horizontal bounds
+        // Horizontal bounds
         if (transform.position.x > 11.3f) 
             transform.position = new Vector3(-11.3f, transform.position.y, 0);
         
@@ -137,7 +167,42 @@ public class Player : MonoBehaviour
         
     }
 
-    // Function to handle the reassignation of the canFire variable and instantiation so no need of the if statement
+    // Function for the player two object's movement like up, down, left and right 
+    void PlayerTwoMovement()
+    {
+        // Up
+        if (Input.GetKey(KeyCode.UpArrow))
+            transform.Translate(Vector3.up * _speed * Time.deltaTime);
+
+        // Down
+        if (Input.GetKey(KeyCode.DownArrow))
+            transform.Translate(Vector3.down * _speed * Time.deltaTime);
+
+        // Left
+        if (Input.GetKey(KeyCode.LeftArrow))
+            transform.Translate(Vector3.left * _speed * Time.deltaTime);
+
+        // Right
+        if (Input.GetKey(KeyCode.RightArrow))
+            transform.Translate(Vector3.right * _speed * Time.deltaTime);
+
+        // Vertical Bounds
+        if (transform.position.y >= 0)
+            transform.position = new Vector3(transform.position.x, 0, 0);
+
+        else if (transform.position.y <= -3.8f)
+            transform.position = new Vector3(transform.position.x, -3.8f, 0);
+
+        // Horizontal bounds
+        if (transform.position.x > 11.3f)
+            transform.position = new Vector3(-11.3f, transform.position.y, 0);
+
+        else if (transform.position.x < -11.3f)
+            transform.position = new Vector3(11.3f, transform.position.y, 0);
+
+    }
+
+    // Firing laser function
     void FireLaser()        // if no private or public is mentioned, its private by default
     {
         // To debug (see if space key works properly)
@@ -182,6 +247,7 @@ public class Player : MonoBehaviour
         {
             Instantiate(_explosionPrefab, transform.position, Quaternion.identity);     // Creates the explosion when the player dies
             _spawnManager.OnPlayerDeath();      // Communicates with the SpawnManager and uses its OnPlayerDeath function where no lives, spawning stops
+            CheckForBestScore();
             Destroy(this.gameObject);   // Then the player dies meaning the player object is destroyed
         }
     }
@@ -247,5 +313,23 @@ public class Player : MonoBehaviour
 
         // Communicates the score amount of the player with the uiManager
         _uiManager.UpdateScore(_score);
+    }
+
+    // Function to check if the best score is lower than the score and if it is, updates the best score to the score when game is done and also saves the best score
+    public void CheckForBestScore()
+    {
+        if (_score > _bestScore)
+        {
+            _bestScore = _score;
+            PlayerPrefs.SetInt("HighScore", _bestScore);    // PlayerPrefs has set functions to save stuff like in this case, using SetInt, you can save the best score by using a specific key
+            _uiManager.UpdateBestScore(_bestScore);
+        }    
+    }
+
+    // Function to get the high score if you left the game and opened it again or restarted the game by pressing R
+    public void GetBestScore()
+    {
+        _bestScore = PlayerPrefs.GetInt("HighScore", 0);    // PlayerPrefs also has get functions to get the saved stuff like in this case, using GetInt, you can load the best score by using the specific key from your SetInt and then a default value if it can't find the key
+        _uiManager.UpdateBestScore(_bestScore);
     }
 }

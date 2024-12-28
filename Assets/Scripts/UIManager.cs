@@ -10,6 +10,8 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private Text _scoreText;        // Score text object to store the score of the game
     [SerializeField]
+    private Text _bestScoreText;    // Best score text object to store the best score of the game
+    [SerializeField]
     private Image _LivesImg;        // To display the right lives image per the player's lives count
     [SerializeField]
     private Sprite[] _liveSprites;  // Array for storing Player's lives images from nolives to 3 lives.
@@ -37,6 +39,12 @@ public class UIManager : MonoBehaviour
     public void UpdateScore(int playerScore)
     {
         _scoreText.text = "Score: " + playerScore.ToString();       // Score value to modify ui by getting the value that is communicated with the player
+    }
+
+    // Updates the best score ui while playing the game 
+    public void UpdateBestScore(int bestScore)
+    {
+        _bestScoreText.text = "Best: " + bestScore.ToString();      // Best score value to modify ui by getting the value that is communicated with the player
     }
 
     // Updates the lives ui image while playing the game
@@ -72,5 +80,17 @@ public class UIManager : MonoBehaviour
             _gameOverText.text = "";
             yield return new WaitForSeconds(0.5f);
         }
+    }
+
+    // Resume Play
+    public void ResumePlay()
+    {
+        _gameManager.ResumeGame();
+    }
+
+    // Back to main menu where we load the main menu scene
+    public void Back_To_Main_Menu()
+    {
+        SceneManager.LoadScene(0);
     }
 }
